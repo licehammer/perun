@@ -30,6 +30,12 @@ http://www.springframework.org/schema/task http://www.springframework.org/schema
       <aop:advisor advice-ref="txAdviceNestedTransaction" pointcut="execution(* cz.metacentrum.perun.core.impl.FacilitiesManagerImpl.*(..))"/>
       <aop:advisor advice-ref="txAdviceNestedTransaction" pointcut="execution(* cz.metacentrum.perun.core.impl.MembersManagerImpl.*(..))"/>
       <aop:advisor advice-ref="txAdviceNestedTransaction" pointcut="execution(* cz.metacentrum.perun.core.impl.UsersManagerImpl.*(..))"/>
+      <aop:advisor advice-ref="txAdviceNestedTransaction" pointcut="execution(* cz.metacentrum.perun.core.impl.AttributesManagerImpl.*(..))"/>
+      <aop:advisor advice-ref="txAdviceNestedTransaction" pointcut="execution(* cz.metacentrum.perun.core.impl.VosManagerImpl.*(..))"/>
+      <aop:advisor advice-ref="txAdviceNestedTransaction" pointcut="execution(* cz.metacentrum.perun.core.impl.GroupsManagerImpl.*(..))"/>
+      <aop:advisor advice-ref="txAdviceNestedTransaction" pointcut="execution(* cz.metacentrum.perun.core.impl.OwnersManagerImpl.*(..))"/>
+      <aop:advisor advice-ref="txAdviceNestedTransaction" pointcut="execution(* cz.metacentrum.perun.core.impl.ResourcesManagerImpl.*(..))"/>
+      <aop:advisor advice-ref="txAdviceNestedTransaction" pointcut="execution(* cz.metacentrum.perun.core.impl.ServicesManagerImpl.*(..))"/>
     </aop:config>
 
     <tx:advice id="txAdviceCommon" transaction-manager="perunTransactionManager">
