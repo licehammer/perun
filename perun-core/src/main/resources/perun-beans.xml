@@ -27,7 +27,9 @@ http://www.springframework.org/schema/task http://www.springframework.org/schema
       <!--<aop:advisor advice-ref="txAdviceAuditerTransaction" pointcut="execution(* cz.metacentrum.perun.core.impl.Auditer.*.*(..))"/>-->
       <aop:advisor advice-ref="txAdviceNoneTransaction" pointcut="execution(* cz.metacentrum.perun.core.impl.ExtSourceSql.*(..))"/>
       <aop:advisor advice-ref="txAdviceNoneTransaction" pointcut="execution(* cz.metacentrum.perun.core.impl.Auditer.flush(..))"/>
-      <aop:advisor advice-ref="txAdviceNestedTransaction" pointcut="execution(* cz.metacentrum.perun.core.impl.*.*(..))"/>
+      <aop:advisor advice-ref="txAdviceNestedTransaction" pointcut="execution(* cz.metacentrum.perun.core.impl.FacilitiesManagerImpl.*(..))"/>
+      <aop:advisor advice-ref="txAdviceNestedTransaction" pointcut="execution(* cz.metacentrum.perun.core.impl.MembersManagerImpl.*(..))"/>
+      <aop:advisor advice-ref="txAdviceNestedTransaction" pointcut="execution(* cz.metacentrum.perun.core.impl.UsersManagerImpl.*(..))"/>
     </aop:config>
 
     <tx:advice id="txAdviceCommon" transaction-manager="perunTransactionManager">
