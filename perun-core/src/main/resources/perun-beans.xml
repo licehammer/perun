@@ -55,7 +55,7 @@ http://www.springframework.org/schema/task http://www.springframework.org/schema
     </tx:advice>
     <tx:advice id="txAdviceNestedTransaction" transaction-manager="perunTransactionManager">
       <tx:attributes>
-        <tx:method name="*" read-only="false" rollback-for="Exception" propagation="NESTED"/>
+        <tx:method name="*" read-only="false" rollback-for="Exception" propagation="REQUIRED"/>
       </tx:attributes>
     </tx:advice>
     <tx:advice id="txAdviceReadOnly" transaction-manager="perunTransactionManager">
