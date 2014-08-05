@@ -11,6 +11,7 @@ import java.util.*;
 
 import cz.metacentrum.perun.core.api.*;
 import cz.metacentrum.perun.core.api.exceptions.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1279,6 +1280,103 @@ public class UsersManagerBlImpl implements UsersManagerBl {
 			throw new InternalErrorException(e);
 		}
 	}
+
+	public void createAlternativePassword(PerunSession sess, User user, String description, String loginNamespace, String password) throws InternalErrorException, PasswordCreationFailedException, LoginNotExistsException {
+		try {
+			manageAlternativePassword(sess, user, PASSWORD_CREATE, loginNamespace, null, description, password);
+		} catch(PasswordCreationFailedRuntimeException ex) {
+			throw new PasswordCreationFailedException(ex);
+		} catch(LoginNotExistsRuntimeException ex) {
+			throw new LoginNotExistsException(ex);
+		}
+	}
+
+	public void deleteAlternativePassword(PerunSession sess, User user, String loginNamespace, String passwordId) throws InternalErrorException, PasswordDeletionFailedException, LoginNotExistsException {
+		try {
+			manageAlternativePassword(sess, user, PASSWORD_DELETE, loginNamespace, passwordId, null, null);
+		} catch(PasswordDeletionFailedRuntimeException ex) {
+			throw new PasswordDeletionFailedException(ex);
+		} catch(LoginNotExistsRuntimeException ex) {
+			throw new LoginNotExistsException(ex);
+		}
+	}
+
+	/**
+	 * Calls external program which do the job with the alternative passwords.
+	 *
+	 * Return codes of the external program
+	 * If password check fails then return 1
+	 * If there is no handler for loginNamespace return 2
+	 * If setting of the new password failed return 3
+	 *
+	 * @param sess
+	 * @param operation
+	 * @param loginNamespace
+	 * @param password
+	 * @throws InternalErrorException
+	 */
+	protected void manageAlternativePassword(PerunSession sess, User user, String operation, String loginNamespace, String passwordId, String description, String password) throws InternalErrorException {
+		ProcessBuilder pb = new ProcessBuilder(Utils.getPropertyFromConfiguration("perun.alternativePasswordManager.program"), operation, loginNamespace, Integer.toString(user.getId()), passwordId);
+
+		Process process;
+		try {
+			process = pb.start();
+		} catch (IOException e) {
+			throw new InternalErrorException(e);
+		}
+
+		InputStream es = process.getErrorStream();
+
+		if (operation.equals(PASSWORD_CREATE)) {
+			OutputStream os = process.getOutputStream();
+			if (password == null || password.isEmpty()) {
+				throw new EmptyPasswordRuntimeException("Alternative password for " + loginNamespace + " cannot be empty.");
+			}
+			// Write password to the stdin of the program
+			PrintWriter pw = new PrintWriter(os, true);
+			pw.write(password);
+			pw.close();
+		}
+
+		// If non-zero exit code is returned, then try to read error output
+		try {
+			if (process.waitFor() != 0) {
+				if (process.exitValue() == 1) {
+					//throw new PasswordDoesntMatchRuntimeException("Old password doesn't match for " + loginNamespace + ":" + userLogin + ".");
+					throw new InternalErrorException("Alternative password manager returns unexpected return code: " + process.exitValue());
+				} else if (process.exitValue() == 3) {
+					//throw new PasswordChangeFailedRuntimeException("Password change failed for " + loginNamespace + ":" + userLogin + ".");
+					throw new InternalErrorException("Alternative password manager returns unexpected return code: " + process.exitValue());
+				} else if (process.exitValue() == 4) {
+					throw new PasswordCreationFailedRuntimeException("Alternative password creation failed for " + user + ". Namespace: " + loginNamespace + ", description: " + description + ".");
+				} else if (process.exitValue() == 5) {
+					throw new PasswordDeletionFailedRuntimeException("Password deletion failed for " + user + ". Namespace: " + loginNamespace + ", passwordId: " + passwordId + ".");
+				} else if (process.exitValue() == 6) {
+					throw new LoginNotExistsRuntimeException("User doesn't exists in underlying system for namespace " + loginNamespace + ", user: " + user + ".");
+				} else if (process.exitValue() == 7) {
+					throw new LoginNotExistsRuntimeException("Problem with creating user entry in underlying system " + loginNamespace + ", user: " + user + ".");
+				} else {
+					// Some other error occured
+					BufferedReader inReader = new BufferedReader(new InputStreamReader(es));
+					StringBuffer errorMsg = new StringBuffer();
+					String line;
+					try {
+						while ((line = inReader.readLine()) != null) {
+							errorMsg.append(line);
+						}
+					} catch (IOException e) {
+						throw new InternalErrorException(e);
+					}
+
+					throw new InternalErrorException(errorMsg.toString());
+				}
+			}
+		} catch (InterruptedException e) {
+			throw new InternalErrorException(e);
+		}
+	}
+
+
 
 	public List<RichUser> convertUsersToRichUsersWithAttributesByNames(PerunSession sess, List<User> users, List<String> attrNames) throws InternalErrorException {
 
