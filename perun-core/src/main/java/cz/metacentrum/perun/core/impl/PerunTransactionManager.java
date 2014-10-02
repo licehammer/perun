@@ -19,6 +19,7 @@ public class PerunTransactionManager extends DataSourceTransactionManager implem
 
 	@Override
 	protected Object doSuspend(Object transaction) {
+		logger.info("----- doSuspend -----");
 		if(TransactionSynchronizationManager.hasResource(this.getAuditer())) {
 			List<AuditerMessage> messages = (List<AuditerMessage>) TransactionSynchronizationManager.getResource(getAuditer());
 			logger.trace("Storing audit messages while suspending transaction. Number of messages " + messages.size());
@@ -29,6 +30,7 @@ public class PerunTransactionManager extends DataSourceTransactionManager implem
 
 	@Override
 	protected void doResume(Object transaction, Object suspendedResources) {
+		logger.info("----- doResume -----");
 		if(TransactionSynchronizationManager.hasResource(this.getAuditer())) {
 			List<AuditerMessage> messages = (List<AuditerMessage>) TransactionSynchronizationManager.getResource(transaction);
 			logger.trace("Retrieving audit messages while rusuming transaction. Number of messages " + messages.size());
@@ -39,18 +41,21 @@ public class PerunTransactionManager extends DataSourceTransactionManager implem
 
 	@Override
 	protected void doCommit(DefaultTransactionStatus status) {
+		logger.info("----- doCommit -----");
 		super.doCommit(status);
 		this.getAuditer().flush();
 	}
 
 	@Override
 	protected void doRollback(DefaultTransactionStatus status) {
+		logger.info("----- doRollback -----");
 		super.doRollback(status);
 		this.getAuditer().clean();
 	}
 
 	@Override
 	protected void doCleanupAfterCompletion(Object transaction) {
+		logger.info("----- doCleanupAfterCompletion -----");
 		super.doCleanupAfterCompletion(transaction);
 		this.getAuditer().clean();
 	}

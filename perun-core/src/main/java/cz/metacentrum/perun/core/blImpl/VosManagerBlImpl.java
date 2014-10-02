@@ -56,6 +56,7 @@ import cz.metacentrum.perun.core.impl.ExtSourcesManagerImpl;
 import cz.metacentrum.perun.core.implApi.ExtSourceApi;
 import cz.metacentrum.perun.core.implApi.VosManagerImplApi;
 import java.util.HashSet;
+import java.util.Random;
 
 /**
  * VosManager buisness logic
@@ -75,6 +76,44 @@ public class VosManagerBlImpl implements VosManagerBl {
 	 */
 	public VosManagerBlImpl(VosManagerImplApi vosManagerImpl) {
 		this.vosManagerImpl = vosManagerImpl;
+	}
+
+	public void mainTransaction(PerunSession perunSession) throws InternalErrorException {
+		getPerunBl().getAuditer().log(perunSession, "MAIN TRANSACTION: START");
+		
+		Random rand = new Random();
+		int n = rand.nextInt(1000000) + 1000000;
+		Vo vo = new Vo();
+		vo.setShortName(String.valueOf(n));
+		vo.setName(String.valueOf(n));
+
+		try {
+			vosManagerImpl.createRandomVo(perunSession, vo);
+		} catch (VoExistsException ex) {
+			throw new InternalErrorException(ex);
+		}
+
+		try {
+			getPerunBl().getVosManagerBl().innerTransaction(perunSession, vo);
+		} catch (VoExistsException ex) {
+			//Tady se to preskoci, protoze to je vporadku
+		}
+
+		vo.setShortName("xx" + String.valueOf(n));
+		vo.setName("xx" + String.valueOf(n));
+		try {
+			vosManagerImpl.createRandomVo(perunSession, vo);
+		} catch (VoExistsException ex) {
+			throw new InternalErrorException(ex);
+		}
+
+		getPerunBl().getAuditer().log(perunSession, "MAIN TRANSACTION: END - created Vo= " + vo);
+	}
+
+	public void innerTransaction(PerunSession perunSession, Vo vo) throws InternalErrorException, VoExistsException {
+		getPerunBl().getAuditer().log(perunSession, "INNER TRANSACTION: START");
+		vosManagerImpl.createRandomVo(perunSession, vo);
+		getPerunBl().getAuditer().log(perunSession, "INNER TRANSACTION: END");
 	}
 
 	public List<Vo> getVos(PerunSession sess) throws InternalErrorException {

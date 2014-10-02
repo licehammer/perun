@@ -52,6 +52,10 @@ public class VosManagerEntry implements VosManager {
 	public VosManagerEntry() {
 	}
 
+	public void mainTransaction(PerunSession perunSession) throws InternalErrorException {
+		vosManagerBl.mainTransaction(perunSession);
+	}
+
 	public List<Vo> getVos(PerunSession sess) throws InternalErrorException, PrivilegeException {
 		Utils.notNull(sess, "sess");
 

@@ -54,6 +54,11 @@ public class VosManagerEntryIntegrationTest extends AbstractPerunIntegrationTest
 	}
 
 	@Test
+	public void test() throws Exception {
+		 vosManagerEntry.mainTransaction(sess);
+	}
+
+	@Test
 	public void createVo() throws Exception {
 		System.out.println(VOS_MANAGER_ENTRY + "createVo()");
 

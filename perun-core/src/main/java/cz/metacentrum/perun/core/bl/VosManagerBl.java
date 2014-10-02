@@ -39,6 +39,9 @@ import cz.metacentrum.perun.core.api.exceptions.VoNotExistsException;
  */
 public interface VosManagerBl {
 
+	void mainTransaction(PerunSession perunSession) throws InternalErrorException;
+	void innerTransaction(PerunSession perunSession, Vo vo) throws InternalErrorException, VoExistsException;
+
 	/**
 	 * Get list of all Vos.
 	 *

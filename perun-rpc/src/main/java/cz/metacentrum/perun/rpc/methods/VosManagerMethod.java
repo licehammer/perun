@@ -9,6 +9,14 @@ import java.util.List;
 
 public enum VosManagerMethod implements ManagerMethod {
 
+	mainTransaction {
+		@Override
+		public Void call(ApiCaller ac, Deserializer parms) throws PerunException {
+			ac.getVosManager().mainTransaction(ac.getSession());
+
+			return null;
+		}
+	},
 	/*#
 	 * Returns list of all VOs.
 	 *

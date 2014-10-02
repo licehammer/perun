@@ -33,6 +33,8 @@ public interface VosManager {
 	static final String MEMBERS_GROUP = "members";
 	static final String MEMBERS_GROUP_DESCRIPTION = "Group containing VO members";
 
+	void mainTransaction(PerunSession perunSession) throws InternalErrorException;
+
 	/**
 	 * Get list of Vos by Access Righs:
 	 * If User is:

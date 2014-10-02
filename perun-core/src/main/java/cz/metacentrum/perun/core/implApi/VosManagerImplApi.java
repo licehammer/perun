@@ -32,6 +32,8 @@ import cz.metacentrum.perun.core.api.exceptions.VoNotExistsException;
  */
 public interface VosManagerImplApi {
 
+	void createRandomVo(PerunSession perunSession, Vo vo) throws InternalErrorException, VoExistsException;
+
 	/**
 	 * Get list of all Vos.
 	 *
