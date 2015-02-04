@@ -55,6 +55,16 @@ public class Attribute extends AttributeDefinition {
 		this.valueModifiedBy = null;
 	}
 
+
+	public Attribute(Attribute attribute) {
+		super(attribute);
+		this.value = attribute.getValue();
+		this.valueCreatedAt = attribute.getValueCreatedAt();
+		this.valueCreatedBy = attribute.getValueCreatedBy();
+		this.valueModifiedAt = attribute.getValueModifiedAt();
+		this.valueModifiedBy = attribute.getValueModifiedBy();
+	}
+
 	public Object getValue() {
 		return value;
 	}

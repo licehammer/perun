@@ -69,7 +69,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
              	The point is to stop Utils from complaining about non-existent /etc/perun/perun.properties.
 	-->
 	<bean id="utilsProperties" class="cz.metacentrum.perun.core.impl.Utils" factory-method="setProperties" scope="singleton">
-	    <constructor-arg ref="coreProperties" />        
+	    <constructor-arg ref="coreProperties" />
 	</bean>
 
     <!-- Perun implementation -->
@@ -251,6 +251,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
     </bean>
     <bean id="attributesManagerImpl" class="cz.metacentrum.perun.core.impl.AttributesManagerImpl" scope="singleton" init-method="initialize">
         <property name="perun" ref="perun"/>
+				<property name="cacheManager" ref="attributeCacheManagerImpl"/>
         <constructor-arg ref="dataSource" />
     </bean>
     <bean id="servicesManagerImpl" class="cz.metacentrum.perun.core.impl.ServicesManagerImpl" scope="singleton">
@@ -272,6 +273,9 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 
     <bean id="synchronizer" class="cz.metacentrum.perun.core.impl.Synchronizer" scope="singleton">
         <constructor-arg ref="perun" />
+    </bean>
+
+		<bean id="attributeCacheManagerImpl" class="cz.metacentrum.perun.core.impl.AttributeCacheManagerImpl" scope="singleton">
     </bean>
 
     <!-- this bean is only for test -->
@@ -308,7 +312,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
                 <prop key="perun.rt.serviceuser.password">password</prop>
                 <prop key="perun.passwordManager.program">/usr/local/bin/perun.passwordManager</prop>
             </props>
-        </property>    
+        </property>
     </bean>
 
     <import resource="classpath:perun-core-trace-log.xml"/>
