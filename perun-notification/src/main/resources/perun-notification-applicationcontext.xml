@@ -31,36 +31,4 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
     <context:component-scan base-package="cz.metacentrum.perun.notif.managers" />
     <context:component-scan base-package="cz.metacentrum.perun.notif.dao" />
 
-    <bean id="notificationListener" class="cz.metacentrum.perun.notif.listener.NotificationListener" autowire="byName">
-    </bean>
-
-    <bean id="perunNotifAuditMessageDao" class="cz.metacentrum.perun.notif.dao.jdbc.PerunNotifAuditMessageDaoImpl" autowire="byName">
-        <property name="dataSource" ref="dataSource"/>
-    </bean>
-
-    <bean id="perunNotifPoolMessageDao" class="cz.metacentrum.perun.notif.dao.jdbc.PerunNotifPoolMessageDaoImpl" autowire="byName">
-        <property name="dataSource" ref="dataSource"/>
-    </bean>
-
-    <bean id="perunNotifRegexDao" class="cz.metacentrum.perun.notif.dao.jdbc.PerunNotifRegexDaoImpl" autowire="byName">
-        <property name="dataSource" ref="dataSource"/>
-    </bean>
-
-    <bean id="perunNotifTemplateDao" class="cz.metacentrum.perun.notif.dao.jdbc.PerunNotifTemplateDaoImpl" autowire="byName">
-        <property name="dataSource" ref="dataSource"/>
-    </bean>
-
-    <bean id="perunNotifObjectDao" class="cz.metacentrum.perun.notif.dao.jdbc.PerunNotifObjectDaoImpl" autowire="byName">
-        <property name="dataSource" ref="dataSource"/>
-    </bean>
-
-    <bean id="perunNotifTemplateManager" class="cz.metacentrum.perun.notif.managers.PerunNotifTemplateManagerImpl" autowire="byName">
-        <property name="notifSenders">
-            <list>
-                <bean id="perunNotifEmailGroupSender" class="cz.metacentrum.perun.notif.senders.PerunNotifEmailGroupSender" autowire="byName"/>
-                <bean id="perunNotifEmailUserSender" class="cz.metacentrum.perun.notif.senders.PerunNotifEmailUserSender" autowire="byName"/>
-                <bean id="perunNotifJabberSender" class="cz.metacentrum.perun.notif.senders.PerunNotifJabberSender" autowire="byName" />
-            </list>
-        </property>
-    </bean>
 </beans>

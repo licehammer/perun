@@ -39,7 +39,6 @@
             classpath:perun-cabinet-applicationContext.xml
             classpath:perun-registrar-lib-applicationcontext.xml
             classpath:perun-notification-applicationcontext.xml
-            classpath:perun-notification-applicationcontext-scheduling.xml
         </param-value>
     </context-param>
 
