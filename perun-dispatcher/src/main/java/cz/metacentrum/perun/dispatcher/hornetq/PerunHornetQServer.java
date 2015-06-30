@@ -38,7 +38,7 @@ public class PerunHornetQServer {
 					dispatcherPropertiesBean.getProperty("dispatcher.port"));
 
 			configuration = new FileConfiguration();
-			configuration.setConfigurationUrl("hornetq-configuration.xml");
+			configuration.setConfigurationUrl("/tmp/hornetq-configuration.xml");
 			configuration.start();
 
 			server = HornetQServers.newHornetQServer(configuration);
