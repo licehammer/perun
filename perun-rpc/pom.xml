@@ -230,6 +230,12 @@
 
 		<dependency>
 			<groupId>cz.metacentrum.perun</groupId>
+			<artifactId>perun-scim</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>cz.metacentrum.perun</groupId>
 			<artifactId>perun-dispatcher</artifactId>
 			<version>${project.version}</version>
 		</dependency>

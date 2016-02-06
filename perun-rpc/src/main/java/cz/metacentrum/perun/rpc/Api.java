@@ -3,6 +3,7 @@ package cz.metacentrum.perun.rpc;
 import cz.metacentrum.perun.core.api.AttributeDefinition;
 import cz.metacentrum.perun.core.api.BeansUtils;
 import cz.metacentrum.perun.core.api.CoreConfig;
+
 import cz.metacentrum.perun.core.api.ExtSourcesManager;
 import cz.metacentrum.perun.core.api.PerunClient;
 import cz.metacentrum.perun.core.api.PerunPrincipal;
@@ -75,6 +76,7 @@ public class Api extends HttpServlet {
 	private final static String PERUNSTATUS = "getPerunStatus";
 	private final static String PERUNSTATISTICS = "getPerunStatistics";
 	private final static String VOOTMANAGER = "vootManager";
+	private final static String SCIMMANAGER = "scimManager";
 	private final static int timeToLiveWhenDone = 60 * 1000; // in milisec, if requests is done more than this time, remove it from list
 
 	private static final String SHIB_IDENTITY_PROVIDER = "Shib-Identity-Provider";
@@ -651,6 +653,11 @@ public class Api extends HttpServlet {
 			if (VOOTMANAGER.equals(manager)) {
 				// Process VOOT protocol
 				result = caller.getVOOTManager().process(caller.getSession(), method, des.readAll());
+				if (perunRequest != null) perunRequest.setResult(result);
+				ser.write(result);
+			} else if (SCIMMANAGER.equals(manager)) {
+				// Process SCIM protocol
+				result = caller.getSCIMManager().process(caller.getSession(), method, des.readAll());
 				if (perunRequest != null) perunRequest.setResult(result);
 				ser.write(result);
 			} else {
