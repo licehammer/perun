@@ -345,6 +345,7 @@ public class Api extends HttpServlet {
 	}
 
 	private void serve(HttpServletRequest req, HttpServletResponse resp, boolean isGet, boolean isPut) throws IOException {
+		log.error("RPC DEBUG - serve method started");
 		Serializer ser = null;
 		String manager = "N/A";
 		String method = "N/A";
@@ -391,6 +392,8 @@ public class Api extends HttpServlet {
 		//prepare result object
 		Object result = null;
 
+		log.error("RPC DEBUG - 1");
+
 		try {
 			String[] fcm; //[0] format, [1] class, [2] method
 			try {
@@ -420,6 +423,8 @@ public class Api extends HttpServlet {
 				throw rex;
 			}
 
+		log.error("RPC DEBUG - 2");
+
 			// Initialize deserializer
 			Deserializer des;
 			if (isGet) {
@@ -443,6 +448,8 @@ public class Api extends HttpServlet {
 				caller = new ApiCaller(getServletContext(), setupPerunPrincipal(req, des));
 				req.getSession(true).setAttribute(APICALLER, caller);
 			}
+
+			log.error("RPC DEBUG - caller: {}",caller.getSession().getPerunPrincipal().getActor());
 
 			// Does user want to logout from perun?
 			if("utils".equals(manager) && "logout".equals(method)) {
@@ -581,6 +588,7 @@ public class Api extends HttpServlet {
 			}
 			ser.writePerunException(new RpcException(RpcException.Type.UNCATCHED_EXCEPTION, ex));
 		} finally {
+			log.error("RPC DEBUG - finally");
 			if(!isGet && !isPut && perunRequest != null) {
 				//save result of this perunRequest
 				perunRequest.setEndTime(System.currentTimeMillis());
