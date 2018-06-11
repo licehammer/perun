@@ -381,9 +381,9 @@ var voFormItems = [{
     },
     "beanName": "ApplicationFormItem"
 }, {
-    "shortname": "displayName",
+    "shortname": "name",
     "required": true,
-    "type": "FROM_FEDERATION_SHOW",
+    "type": "TEXTFIELD",
     "federationAttribute": "displayName",
     "perunDestinationAttribute": "urn:perun:user:attribute-def:core:displayName",
     "regex": "",
@@ -485,9 +485,9 @@ var groupFormItems = [{
     },
     "beanName": "ApplicationFormItem"
 }, {
-    "shortname": "displayName",
+    "shortname": "name",
     "required": true,
-    "type": "FROM_FEDERATION_SHOW",
+    "type": "TEXTFIELD",
     "federationAttribute": "displayName",
     "perunDestinationAttribute": "urn:perun:user:attribute-def:core:displayName",
     "regex": "",
