@@ -62,6 +62,9 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Implementation of Perun.
@@ -112,6 +115,13 @@ public class PerunBlImpl implements PerunBl {
 
 	private final static Set<String> dontLookupUsersForLogins = BeansUtils.getCoreConfig().getDontLookupUsers();
 
+	//FIXME get form configuration file
+	private final static Set<String> extSourcesWithMultipleIdentifiers = new HashSet<String>() {{ add("https://proxy.acc.demo.eduteams.org/proxy"); }};
+
+	private final static String multivalueAttributeSeparatorRegExp = ";"; //FIXME move regex to configuration
+	private final static String additionalIdentifiersAttributeName = "additionalIdentifiers"; //FIXME move regex to configuration
+	private final static String additionalIdentifiersPerunAttributeName = AttributesManager.NS_UES_ATTR_DEF + ":" + additionalIdentifiersAttributeName;
+
 	public PerunBlImpl() {
 
 	}
@@ -127,8 +137,34 @@ public class PerunBlImpl implements PerunBl {
 		if (principal.getUser() == null && usersManagerBl != null && !dontLookupUsersForLogins.contains(principal.getActor())) {
 			// Get the user if we are completely initialized
 			try {
+
 				PerunSession internalSession = getPerunSession();
-				User user = usersManagerBl.getUserByExtSourceNameAndExtLogin(internalSession, principal.getExtSourceName(), principal.getActor());
+				User user = null;
+				if(extSourcesWithMultipleIdentifiers.contains(principal.getExtSourceName())) {
+
+					log.info("TEST: ExtSource supports multiple identifiers");
+
+					String additionalIdentifiers = principal.getAdditionalInformations().get(additionalIdentifiersAttributeName);
+
+					log.info("TEST: Additional info : " + principal.getAdditionalInformations());
+					log.info("TEST: Additional identifiers found: " + additionalIdentifiers);
+					for(String identifier : additionalIdentifiers.split(multivalueAttributeSeparatorRegExp)) {
+						try {
+							UserExtSource userExtSource = usersManagerBl.getUserExtSourceByUniqueAttributeValue(internalSession, additionalIdentifiersPerunAttributeName, identifier);
+							user = usersManagerBl.getUserByUserExtSource(internalSession, userExtSource);
+
+							log.info("TEST: User found " + user);
+							break;
+						} catch(UserExtSourceNotExistsException ex) {
+							//try to find user ext source using different identifier in next iteration of for cycle
+						} catch(AttributeNotExistsException ex) {
+							throw new InternalErrorException("Mandatory attribute is not defined: " + additionalIdentifiersPerunAttributeName, ex);
+						}
+
+					}
+				} else {
+					user = usersManagerBl.getUserByExtSourceNameAndExtLogin(internalSession, principal.getExtSourceName(), principal.getActor());
+				}
 				principal.setUser(user);
 
 				if (client.getType() != PerunClient.Type.OAUTH) {
@@ -168,6 +204,7 @@ public class PerunBlImpl implements PerunBl {
 		// update selected attributes for given extsourcetype
 		List<AttributeDefinition> attrs = coreConfig.getAttributesForUpdate().get(ues.getExtSource().getType());
 		if (attrs != null) {
+
 			for (AttributeDefinition attr : attrs) {
 				//get value from authentication
 				String attrValue = additionalAttributes.get(attr.getFriendlyName());
@@ -184,7 +221,17 @@ public class PerunBlImpl implements PerunBl {
 							attributeWithValue = attributesManagerBl.getAttribute(session, ues, attr.getName());
 						}
 					}
-					attributeWithValue.setValue(attrValue);
+
+					//for Array list attributes try to parse string value into individual fields
+					if(attributeWithValue.getType().equals(ArrayList.class.getName())) {
+
+						log.info("TEST: storing list-type attribute (before split) " + attributeWithValue);
+						attributeWithValue.setValue(new ArrayList<String>(Arrays.asList(attrValue.split(multivalueAttributeSeparatorRegExp))));
+						log.info("TEST: storing list-type attribute (after split) " + attributeWithValue);
+					} else {
+						attributeWithValue.setValue(attrValue);
+					}
+
 					log.debug("storing attribute {}='{}' for user {}", attributeWithValue.getFriendlyName(), attrValue, ues.getLogin());
 					attributesManagerBl.setAttribute(session, ues, attributeWithValue);
 				} catch (AttributeNotExistsException | WrongAttributeAssignmentException | WrongAttributeValueException | WrongReferenceAttributeValueException e) {
