@@ -21,8 +21,8 @@ import org.slf4j.LoggerFactory;
 public class urn_perun_user_attribute_def_def_login_namespace_fenix_persistent_shadow extends urn_perun_user_attribute_def_def_login_namespace {
 
 	private final static Logger log = LoggerFactory.getLogger(urn_perun_user_attribute_def_def_login_namespace_fenix_persistent_shadow.class);
-	private final static String extSourceNameFenix = "https://proxy-fenix.pilot.eduteams.org/proxy";
-	private final static String domainNameFenix = "@fenix.pilot.eduteams.org";
+	private final static String extSourceNameFenix = "https://central-proxy.fenix-ri.eu/proxy";
+	private final static String domainNameFenix = "@fenix-ri.eu";
 	private final static String attrNameFenix = "login-namespace:fenix-persistent-shadow";
 
 	/**
